@@ -5,6 +5,7 @@ admin.initializeApp();
 
 const userController = require('./controllers/userController');
 const kaiAIController = require('./controllers/kaiAIController');
+const quickAction = require('./tools/quickAction');
 const { seedDatabase } = require('./cloud_db_seed');
 
 seedDatabase();
@@ -23,6 +24,8 @@ module.exports = {
   tool: kaiAIController.tool,
   createChatSession: kaiAIController.createChatSession,
 
+  /* Kai user actions */
+  quickAction: quickAction.getSuggestions,
   /* Migration Scripts - For running  */
   ...migrationScripts,
 };
