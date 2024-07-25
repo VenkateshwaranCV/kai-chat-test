@@ -17,6 +17,7 @@ import {
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
 
+import DiscoveryLibrary from '@/components/DiscoveryLibrary/DiscoveryLibrary';
 import QuickActions from '@/components/QuickActions/QuickActions';
 
 import NavigationIcon from '@/assets/svg/Navigation.svg';
@@ -246,6 +247,11 @@ const ChatInterface = () => {
     if (e.keyCode === 13) handleSendMessage();
   };
 
+  const handleSelectPrompt = (prompt) => {
+    dispatch(setInput(prompt.description));
+    SetPromptInChat(prompt.description);
+  };
+
   const renderSendIcon = () => {
     return (
       <InputAdornment position="end">
@@ -334,6 +340,24 @@ const ChatInterface = () => {
     return null;
   };
 
+  const renderDiscoveryLibrary = () => {
+    const customPrompts = [
+      {
+        title: 'Interactive Techniques',
+        description: 'Learn about interactive teaching techniques.',
+      },
+      {
+        title: 'Coding Books',
+        description: 'Recommended books for learning coding.',
+      },
+      // Other custom prompts
+    ];
+
+    return (
+      <DiscoveryLibrary prompts={customPrompts} onSelect={handleSelectPrompt} />
+    );
+  };
+
   const renderNewMessageIndicator = () => {
     return (
       <Fade in={showNewMessageIndicator}>
@@ -379,6 +403,7 @@ const ChatInterface = () => {
   return (
     <Grid {...styles.mainGridProps}>
       {renderMoreChat()}
+      {renderDiscoveryLibrary()} {/* Render the Discovery Library */}
       {renderCenterChatContent()}
       {renderCenterChatContentNoMessages()}
       {renderNewMessageIndicator()}

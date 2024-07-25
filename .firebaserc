@@ -1,12 +1,12 @@
 {
   "projects": {
-    "default": "kai-coding-samurais-ted"
+    "default": "kai-chat-d3c78"
   },
   "targets": {
-    "kai-coding-samurais-ted" :{
+    "kai-chat-d3c78" :{
       "hosting": {
         "next": [
-          "kai-coding-samurais-ted"
+          "kai-chat-d3c78"
         ]
       }
     }
