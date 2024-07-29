@@ -17,6 +17,7 @@ import {
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
 
+import DefaultPrompts from '@/components/DefaultPrompts/DefaultPrompts';
 import QuickActions from '@/components/QuickActions/QuickActions';
 
 import NavigationIcon from '@/assets/svg/Navigation.svg';
@@ -269,6 +270,10 @@ const ChatInterface = () => {
     );
   };
 
+  const renderDefaultPrompts = () => {
+    return <DefaultPrompts />;
+  };
+
   const renderMoreChat = () => {
     if (!more) return null;
     return (
@@ -382,6 +387,7 @@ const ChatInterface = () => {
       {renderCenterChatContent()}
       {renderCenterChatContentNoMessages()}
       {renderNewMessageIndicator()}
+      {renderDefaultPrompts()}
       {renderBottomChatContent()}
     </Grid>
   );

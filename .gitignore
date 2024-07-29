@@ -139,3 +139,6 @@ dist
 # Ignore back-end build output
 **/node_modules/
 **/build/
+
+# Ignore eslint settings
+*.mjs
