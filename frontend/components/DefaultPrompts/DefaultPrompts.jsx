@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 
-import { Grid, Paper } from '@mui/material';
+import Box, { Grid, Paper, Typography } from '@mui/material';
+
+import Image from 'next/image';
+
+import Logo from '@/assets/svg/MenuLogo.svg';
 
 import styles from './styles';
 
 const DefaultPrompts = () => {
   const [hovers, setHovers] = useState([false, false, false, false]);
+  const demoText = [
+    'Help me make a class schedule for this quarter',
+    'Pull up the latest course syllabus',
+    'Give me the student list of the latest course',
+    'Send emails to every student about the new homework notification',
+  ];
 
   return (
     // The larger container to display cards
@@ -33,7 +43,12 @@ const DefaultPrompts = () => {
                 ? styles.hoverCard
                 : styles.defaultPromptsSingleCardProps),
             }}
-          />
+          >
+            <Typography variant="body1" style={{ ...styles.texts }}>
+              {demoText[value]}
+            </Typography>
+            <Logo viewBox="-30 -20 88.5 79.5" style={{ ...styles.logos }} />
+          </Paper>
         </Grid>
       ))}
     </Grid>
