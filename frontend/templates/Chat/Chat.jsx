@@ -1,10 +1,7 @@
+/* eslint-disable quotes */
 import React, { useEffect, useRef, useState } from 'react';
 
-import {
-  ArrowDownwardOutlined,
-  InfoOutlined,
-  Settings,
-} from '@mui/icons-material';
+import { ArrowDownwardOutlined } from '@mui/icons-material';
 import {
   Button,
   Fade,
@@ -12,12 +9,12 @@ import {
   IconButton,
   InputAdornment,
   TextField,
-  Typography,
 } from '@mui/material';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
 
 import DiscoveryLibrary from '@/components/DiscoveryLibrary/DiscoveryLibrary';
+import NavBar from '@/components/NavBar/NavBar';
 import QuickActions from '@/components/QuickActions/QuickActions';
 
 import NavigationIcon from '@/assets/svg/Navigation.svg';
@@ -30,7 +27,6 @@ import Message from './Message';
 import styles from './styles';
 
 import {
-  openInfoChat,
   resetChat,
   setChatSession,
   setError,
@@ -52,34 +48,29 @@ const ChatInterface = () => {
 
   const dispatch = useDispatch();
   const {
-    more,
     input,
     typing,
     chat,
     sessionLoaded,
-    openSettingsChat,
-    infoChatOpened,
     fullyScrolled,
     streamingDone,
     streaming,
     error,
   } = useSelector((state) => state.chat);
   const { data: userData } = useSelector((state) => state.user);
-  // eslint-disable-next-line
-  const [selectedAction, setSelectedAction] = useState('');
-  const [promptInChat, SetPromptInChat] = useState('');
+  const [, setSelectedAction] = useState('');
+  const [promptInChat, setPromptInChat] = useState('');
+  const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false);
   const sessionId = localStorage.getItem('sessionId');
 
   const currentSession = chat;
   const chatMessages = currentSession?.messages;
   const showNewMessageIndicator = !fullyScrolled && streamingDone;
 
+  // Function to render additional chat options
+
   const startConversation = async (message) => {
-    dispatch(
-      setMessages({
-        role: MESSAGE_ROLE.AI,
-      })
-    );
+    dispatch(setMessages({ role: MESSAGE_ROLE.AI }));
     dispatch(setTyping(true));
 
     const chatPayload = {
@@ -93,7 +84,6 @@ const ChatInterface = () => {
     };
 
     const { status, data } = await createChatSession(chatPayload, dispatch);
-
     dispatch(setTyping(false));
     if (status === 'created') dispatch(setStreaming(true));
     dispatch(setChatSession(data));
@@ -114,9 +104,7 @@ const ChatInterface = () => {
       messagesContainerRef.current?.scrollTo(
         0,
         messagesContainerRef.current?.scrollHeight,
-        {
-          behavior: 'smooth',
-        }
+        { behavior: 'smooth' }
       );
 
       const sessionRef = query(
@@ -131,13 +119,9 @@ const ChatInterface = () => {
             const updatedMessages = updatedData.messages;
 
             const lastMessage = updatedMessages[updatedMessages.length - 1];
-
             if (lastMessage?.role === MESSAGE_ROLE.AI) {
               dispatch(
-                setMessages({
-                  role: MESSAGE_ROLE.AI,
-                  response: lastMessage,
-                })
+                setMessages({ role: MESSAGE_ROLE.AI, response: lastMessage })
               );
               dispatch(setTyping(false));
             }
@@ -166,11 +150,8 @@ const ChatInterface = () => {
     messagesContainerRef.current?.scrollTo(
       0,
       messagesContainerRef.current?.scrollHeight,
-      {
-        behavior: 'smooth',
-      }
+      { behavior: 'smooth' }
     );
-
     dispatch(setStreamingDone(false));
   };
 
@@ -188,9 +169,7 @@ const ChatInterface = () => {
     const message = {
       role: MESSAGE_ROLE.HUMAN,
       type: MESSAGE_TYPES.TEXT,
-      payload: {
-        text: input,
-      },
+      payload: { text: input },
     };
 
     if (!chatMessages) {
@@ -198,12 +177,7 @@ const ChatInterface = () => {
       return;
     }
 
-    dispatch(
-      setMessages({
-        role: MESSAGE_ROLE.HUMAN,
-      })
-    );
-
+    dispatch(setMessages({ role: MESSAGE_ROLE.HUMAN }));
     dispatch(setTyping(true));
 
     await sendMessage({ message, id: sessionId }, dispatch);
@@ -216,16 +190,10 @@ const ChatInterface = () => {
     const message = {
       role: MESSAGE_ROLE.HUMAN,
       type: MESSAGE_TYPES.QUICK_REPLY,
-      payload: {
-        text: option,
-      },
+      payload: { text: option },
     };
 
-    dispatch(
-      setMessages({
-        role: MESSAGE_ROLE.HUMAN,
-      })
-    );
+    dispatch(setMessages({ role: MESSAGE_ROLE.HUMAN }));
     dispatch(setTyping(true));
 
     await sendMessage({ message, id: currentSession?.id }, dispatch);
@@ -234,11 +202,10 @@ const ChatInterface = () => {
   const handleQuickAction = (action) => {
     setSelectedAction(action);
     if (action === 'Default') {
-      // eslint-disable-next-line
-      SetPromptInChat('Let\'s have a random normal conversation');
+      setPromptInChat("Let's have a random normal conversation");
     } else {
       const str = `I want to specifically talk in the topic of ${action}, please prepare for it`;
-      SetPromptInChat(str);
+      setPromptInChat(str);
     }
   };
 
@@ -249,58 +216,30 @@ const ChatInterface = () => {
 
   const handleSelectPrompt = (prompt) => {
     dispatch(setInput(prompt.description));
-    SetPromptInChat(prompt.description);
+    setPromptInChat(prompt.description);
   };
 
-  const renderSendIcon = () => {
-    return (
-      <InputAdornment position="end">
-        <IconButton
-          onClick={handleSendMessage}
-          {...styles.bottomChatContent.iconButtonProps(
-            typing || error || !input || streaming
-          )}
-        >
-          <NavigationIcon />
-        </IconButton>
-      </InputAdornment>
-    );
-  };
+  const renderSendIcon = () => (
+    <InputAdornment position="end">
+      <IconButton
+        onClick={handleSendMessage}
+        {...styles.bottomChatContent.iconButtonProps(
+          typing || error || !input || streaming
+        )}
+      >
+        <NavigationIcon />
+      </IconButton>
+    </InputAdornment>
+  );
 
-  const renderQuickActions = () => {
-    return (
-      <InputAdornment position="start">
-        <QuickActions onAction={handleQuickAction} />
-      </InputAdornment>
-    );
-  };
-
-  const renderMoreChat = () => {
-    if (!more) return null;
-    return (
-      <Grid {...styles.moreChat.moreChatProps}>
-        <Grid {...styles.moreChat.contentMoreChatProps}>
-          <Settings {...styles.moreChat.iconProps} />
-          <Typography {...styles.moreChat.titleProps}>Settings</Typography>
-        </Grid>
-        <Grid
-          {...styles.moreChat.contentMoreChatProps}
-          onClick={() => dispatch(openInfoChat())}
-        >
-          <InfoOutlined {...styles.moreChat.iconProps} />
-          <Typography {...styles.moreChat.titleProps}>Information</Typography>
-        </Grid>
-      </Grid>
-    );
-  };
+  const renderQuickActions = () => (
+    <InputAdornment position="start">
+      <QuickActions onAction={handleQuickAction} />
+    </InputAdornment>
+  );
 
   const renderCenterChatContent = () => {
-    if (
-      !openSettingsChat &&
-      !infoChatOpened &&
-      chatMessages?.length !== 0 &&
-      !!chatMessages
-    )
+    if (!isDiscoveryOpen && chatMessages?.length) {
       return (
         <Grid
           onClick={() => dispatch(setMore({ role: 'shutdown' }))}
@@ -330,13 +269,14 @@ const ChatInterface = () => {
           </Grid>
         </Grid>
       );
-
+    }
     return null;
   };
 
   const renderCenterChatContentNoMessages = () => {
-    if ((chatMessages?.length === 0 || !chatMessages) && !infoChatOpened)
+    if (!isDiscoveryOpen && (!chatMessages?.length || !chatMessages)) {
       return <CenterChatContentNoMessages />;
+    }
     return null;
   };
 
@@ -354,58 +294,70 @@ const ChatInterface = () => {
     ];
 
     return (
-      <DiscoveryLibrary prompts={customPrompts} onSelect={handleSelectPrompt} />
-    );
-  };
-
-  const renderNewMessageIndicator = () => {
-    return (
-      <Fade in={showNewMessageIndicator}>
-        <Button
-          startIcon={<ArrowDownwardOutlined />}
-          onClick={handleScrollToBottom}
-          {...styles.newMessageButtonProps}
-        />
-      </Fade>
-    );
-  };
-
-  const renderBottomChatContent = () => {
-    if (!openSettingsChat && !infoChatOpened)
-      return (
-        <Grid
-          {...styles.bottomChatContent.bottomChatContentGridProps}
-          sx={{ alignItems: 'center', paddingLeft: '10px' }}
-        >
-          <TextField
-            value={promptInChat}
-            onChange={(e) => dispatch(setInput(e.currentTarget.value))}
-            // onChange={() => dispatch(setInput(selectedAction))}
-            onKeyUp={keyDownHandler}
-            error={!!error}
-            helperText={error}
-            disabled={!!error}
-            focused={false}
-            {...styles.bottomChatContent.chatInputProps(
-              renderSendIcon,
-              renderQuickActions,
-              !!error,
-              input
-            )}
-            sx={{ flex: 1, marginLeft: '10px' }}
-          />
+      <Grid container>
+        <Grid item xs={12} sm={4} md={3} style={{ padding: '20px' }}>
+          {isDiscoveryOpen && (
+            <DiscoveryLibrary
+              prompts={customPrompts}
+              onSelect={handleSelectPrompt}
+            />
+          )}
         </Grid>
-      );
-
-    return null;
+        <Grid
+          item
+          xs={12}
+          sm={isDiscoveryOpen ? 8 : 12}
+          md={isDiscoveryOpen ? 9 : 12}
+          style={{ padding: '20px' }}
+        >
+          {renderCenterChatContent()}
+          {renderCenterChatContentNoMessages()}
+        </Grid>
+      </Grid>
+    );
   };
+
+  const renderNewMessageIndicator = () => (
+    <Fade in={showNewMessageIndicator}>
+      <Button
+        startIcon={<ArrowDownwardOutlined />}
+        onClick={handleScrollToBottom}
+        {...styles.newMessageButtonProps}
+      />
+    </Fade>
+  );
+
+  const renderBottomChatContent = () => (
+    <Grid
+      {...styles.bottomChatContent.bottomChatContentGridProps}
+      sx={{ alignItems: 'center', paddingLeft: '10px' }}
+    >
+      <TextField
+        value={promptInChat}
+        onChange={(e) => dispatch(setInput(e.currentTarget.value))}
+        onKeyUp={keyDownHandler}
+        error={!!error}
+        helperText={error}
+        disabled={!!error}
+        focused={false}
+        {...styles.bottomChatContent.chatInputProps(
+          renderSendIcon,
+          renderQuickActions,
+          !!error,
+          input
+        )}
+        sx={{ flex: 1, marginLeft: '10px' }}
+      />
+    </Grid>
+  );
 
   return (
     <Grid {...styles.mainGridProps}>
-      {renderMoreChat()}
-      {renderDiscoveryLibrary()} {/* Render the Discovery Library */}
-      {renderCenterChatContent()}
-      {renderCenterChatContentNoMessages()}
+      <NavBar
+        onDiscoveryClick={() => setIsDiscoveryOpen(true)}
+        onChatClick={() => setIsDiscoveryOpen(false)}
+      />
+      {renderDiscoveryLibrary()}
       {renderNewMessageIndicator()}
       {renderBottomChatContent()}
     </Grid>
