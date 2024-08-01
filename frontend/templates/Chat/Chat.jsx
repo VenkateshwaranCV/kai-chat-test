@@ -67,8 +67,6 @@ const ChatInterface = () => {
   const chatMessages = currentSession?.messages;
   const showNewMessageIndicator = !fullyScrolled && streamingDone;
 
-  // Function to render additional chat options
-
   const startConversation = async (message) => {
     dispatch(setMessages({ role: MESSAGE_ROLE.AI }));
     dispatch(setTyping(true));
@@ -287,10 +285,21 @@ const ChatInterface = () => {
         description: 'Learn about interactive teaching techniques.',
       },
       {
-        title: 'Coding Books',
-        description: 'Recommended books for learning coding.',
+        title: 'AI Custom Course Creator',
+        description: 'Have Kai help you build your class from scratch!',
       },
-      // Other custom prompts
+      {
+        title: 'Worksheet Generator - Easy Level',
+        description: 'Create a worksheet to print or save.',
+      },
+      {
+        title: 'Worksheet Generator - Medium Level',
+        description: 'Create a worksheet to print or save.',
+      },
+      {
+        title: 'Worksheet Generator - Hard Level',
+        description: 'Create a worksheet to print or save.',
+      },
     ];
 
     return (
@@ -352,14 +361,20 @@ const ChatInterface = () => {
   );
 
   return (
-    <Grid {...styles.mainGridProps}>
-      <NavBar
-        onDiscoveryClick={() => setIsDiscoveryOpen(true)}
-        onChatClick={() => setIsDiscoveryOpen(false)}
-      />
-      {renderDiscoveryLibrary()}
-      {renderNewMessageIndicator()}
-      {renderBottomChatContent()}
+    <Grid container direction="column" style={{ height: '100vh' }}>
+      <Grid item>
+        <NavBar
+          onDiscoveryClick={() => setIsDiscoveryOpen(true)}
+          onChatClick={() => setIsDiscoveryOpen(false)}
+        />
+      </Grid>
+      <Grid item container style={{ flex: 1 }}>
+        {renderDiscoveryLibrary()}
+      </Grid>
+      <Grid item>
+        {renderNewMessageIndicator()}
+        {renderBottomChatContent()}
+      </Grid>
     </Grid>
   );
 };

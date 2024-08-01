@@ -18,7 +18,7 @@ const styles = {
   moreChat: {
     moreChatProps: {
       container: true,
-      bgcolor: '#FCFCFC',
+      bgcolor: '#333333',
       boxShadow: '0px 4px 15px rgba(202, 202, 202, 0.25)',
       borderRadius: '12px',
       flexDirection: 'column',
