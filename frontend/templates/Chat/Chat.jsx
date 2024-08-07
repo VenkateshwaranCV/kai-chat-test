@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-
 import {
   ArrowDownwardOutlined,
   InfoOutlined,
@@ -66,14 +65,12 @@ const ChatInterface = () => {
   } = useSelector((state) => state.chat);
   const { data: userData } = useSelector((state) => state.user);
   // eslint-disable-next-line
-  const [selectedAction, setSelectedAction] = useState('');
-  const [promptInChat, SetPromptInChat] = useState('');
   const sessionId = localStorage.getItem('sessionId');
 
   const currentSession = chat;
   const chatMessages = currentSession?.messages;
   const showNewMessageIndicator = !fullyScrolled && streamingDone;
-
+  const [isOnDefaultPrompts, setOnDefaultPrompts] = useState(false);
   const startConversation = async (message) => {
     dispatch(
       setMessages({
@@ -174,10 +171,10 @@ const ChatInterface = () => {
     dispatch(setStreamingDone(false));
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (action) => {
     dispatch(setStreaming(true));
-
-    if (!input) {
+    // console.log(isOnDefaultPrompts);
+    if (!input && isOnDefaultPrompts) {
       dispatch(setError('Please enter a message'));
       setTimeout(() => {
         dispatch(setError(null));
@@ -189,7 +186,7 @@ const ChatInterface = () => {
       role: MESSAGE_ROLE.HUMAN,
       type: MESSAGE_TYPES.TEXT,
       payload: {
-        text: input,
+        text: !isOnDefaultPrompts ? action : input,
       },
     };
 
@@ -231,17 +228,6 @@ const ChatInterface = () => {
     await sendMessage({ message, id: currentSession?.id }, dispatch);
   };
 
-  const handleQuickAction = (action) => {
-    setSelectedAction(action);
-    if (action === 'Default') {
-      // eslint-disable-next-line
-      SetPromptInChat('Let\'s have a random normal conversation');
-    } else {
-      const str = `I want to specifically talk in the topic of ${action}, please prepare for it`;
-      SetPromptInChat(str);
-    }
-  };
-
   const keyDownHandler = async (e) => {
     if (typing || !input || streaming) return;
     if (e.keyCode === 13) handleSendMessage();
@@ -265,13 +251,35 @@ const ChatInterface = () => {
   const renderQuickActions = () => {
     return (
       <InputAdornment position="start">
-        <QuickActions onAction={handleQuickAction} />
+        <QuickActions
+          onAction={(action) => {
+            let str = '';
+            if (action === 'Default') {
+              // eslint-disable-next-line prettier/prettier
+              str = 'Let\'s have a random normal conversation';
+            } else {
+              str = `I want to specifically talk in the topic of ${action}, please prepare for it`;
+            }
+            dispatch(setInput(str));
+          }}
+        />
       </InputAdornment>
     );
   };
 
+  // eslint-disable-next-line consistent-return
   const renderDefaultPrompts = () => {
-    return <DefaultPrompts />;
+    // console.log(isOnDefaultPrompts);
+    if (!isOnDefaultPrompts) {
+      return (
+        <DefaultPrompts
+          onAction={(action) => {
+            setOnDefaultPrompts(true);
+            handleSendMessage(action);
+          }}
+        />
+      );
+    }
   };
 
   const renderMoreChat = () => {
@@ -359,9 +367,8 @@ const ChatInterface = () => {
           sx={{ alignItems: 'center', paddingLeft: '10px' }}
         >
           <TextField
-            value={promptInChat}
+            value={input}
             onChange={(e) => dispatch(setInput(e.currentTarget.value))}
-            // onChange={() => dispatch(setInput(selectedAction))}
             onKeyUp={keyDownHandler}
             error={!!error}
             helperText={error}

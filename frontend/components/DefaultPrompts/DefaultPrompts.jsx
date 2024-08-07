@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 
-import Box, { Grid, Paper, Typography } from '@mui/material';
-
-import Image from 'next/image';
+import { Grid, Paper, Typography } from '@mui/material';
 
 import Logo from '@/assets/svg/MenuLogo.svg';
 
 import styles from './styles';
 
-const DefaultPrompts = () => {
+const DefaultPrompts = ({ onAction }) => {
   const [hovers, setHovers] = useState([false, false, false, false]);
   const demoText = [
     'Help me make a class schedule for this quarter',
@@ -37,6 +35,9 @@ const DefaultPrompts = () => {
               const newHovers = [...hovers];
               newHovers[value] = true;
               setHovers(newHovers);
+            }}
+            onClick={() => {
+              onAction(demoText[value]);
             }}
             style={{
               ...(hovers[value]

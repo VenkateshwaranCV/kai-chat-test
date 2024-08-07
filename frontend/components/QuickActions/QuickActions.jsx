@@ -18,7 +18,7 @@ const QuickActions = ({ onAction }) => {
   // eslint-disable-next-line
   const [loading, setLoading] = useState(false);
   // eslint-disable-next-line no-console
-  const [selectedAction, setSelectedAction] = useState('');
+  const [selectedAction, setSelectedAction] = useState(false);
   const [actions, setActions] = useState([
     'Default',
     'Analyze Text',
@@ -48,26 +48,14 @@ const QuickActions = ({ onAction }) => {
     return res;
   };
 
-  // Add new action prompts into collection
-  // const addQuickActions = async (data) => {
-  //   actions.push(data);
-  //   setActions(actions);
-  // };
-
   const handleClick = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setActions(getQuickActions());
-    // console.log(newActions);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  // const handleActionClick = (action) => {
-  //   onAction(action);
-  //   setAnchorEl(null);
-  // };
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
